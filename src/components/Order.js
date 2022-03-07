@@ -33,7 +33,7 @@ const Order = (props) => {
         }
         onClick={createLastTransactionObject}
       >
-        Done (Click 3 x first :()
+        Done
       </button>
       <button disabled={!lastTransactionIsSet} onClick={addTransaction}>
         Confirm transaction
