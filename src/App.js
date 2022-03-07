@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import NoData from "./components/NoData";
+import { countScore } from "./functions/countScore";
+import { getDate } from "./functions/getDate";
 import Product from "./components/Product";
 import Transactions from "./components/Transactions";
 import Order from "./components/Order";
@@ -20,7 +22,6 @@ const App = () => {
   const [addedProducts, setAddedProducts] = useState([]);
   const [lastTransaction, setLastTransaction] = useState({});
   const [lastTransactionIsSet, setLastTransactionIsSet] = useState(false);
-  const [pointsAreCounted, setPointsAreCounted] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [areTransactionsLoading, setAreTransactionsLoading] = useState(true);
   const [clientTransactions, setClientTransactions] = useState([]);
@@ -29,10 +30,11 @@ const App = () => {
     setClientLastThreeMonthsTransactions,
   ] = useState([]);
   const [
-    totalPointsLast3MonthsClientTransactions,
-    setTotalPointsLast3MonthsClientTransactions,
+    totalScoreLast3MonthsClientTransactions,
+    setTotalScoreLast3MonthsClientTransactions,
   ] = useState({});
   const [error, setError] = useState("");
+  let scoreIsCounted = false;
 
   const getProducts = async () => {
     await axios
@@ -107,6 +109,7 @@ const App = () => {
 
   const addItem = (prod) => {
     setLastTransactionIsSet(false);
+    scoreIsCounted = false;
 
     if (!addedProducts.length) {
       setAddedProducts((addedProducts) => [...addedProducts, prod]);
@@ -144,6 +147,7 @@ const App = () => {
 
   const removeAddedProduct = (addedProduct) => {
     setLastTransactionIsSet(false);
+    scoreIsCounted = false;
 
     return setAddedProducts(
       (prevProducts) =>
@@ -165,54 +169,7 @@ const App = () => {
     );
   };
 
-  const setPoints = (lastTransaction) => {
-    if (lastTransaction.totalValue > 100) {
-      setLastTransaction((prevState) => ({
-        ...prevState,
-        pointsOver50Dollars: lastTransaction.totalValue - 50,
-        pointsOver100Dollars: (lastTransaction.totalValue - 100) * 2,
-        totalPoints:
-          (lastTransaction.totalValue - 100) * 2 +
-          (lastTransaction.totalValue - 50),
-      }));
-      setPointsAreCounted(true);
-      return;
-    } else if (
-      lastTransaction.totalValue > 50 &&
-      lastTransaction.totalValue <= 100
-    ) {
-      setLastTransaction((prevState) => ({
-        ...prevState,
-        pointsOver50Dollars: (lastTransaction.totalValue - 50) * 1,
-        pointsOver100Dollars: 0,
-        totalPoints: (lastTransaction.totalValue - 50) * 1,
-      }));
-      setPointsAreCounted(true);
-      return;
-    } else if (lastTransaction.totalValue <= 50) {
-      setLastTransaction((prevState) => ({
-        ...prevState,
-        pointsOver50Dollars: 0,
-        pointsOver100Dollars: 0,
-        totalPoints: 0,
-      }));
-      setPointsAreCounted(true);
-      return;
-    }
-  };
-
   const createLastTransactionObject = () => {
-    function getDate(date = new Date()) {
-      let month = String(date.getMonth() + 1);
-      let day = String(date.getDate());
-      const year = String(date.getFullYear());
-
-      if (month.length < 2) month = "0" + month;
-      if (day.length < 2) day = "0" + day;
-
-      return `${year}/${month}/${day}`;
-    }
-
     addedProducts.length > 0 &&
       setLastTransaction((prevState) => ({
         ...prevState,
@@ -225,14 +182,10 @@ const App = () => {
           0
         ),
         client: selectedClient,
-
-        pointsOver50Dollars: 0,
-        pointsOver100Dollars: 0,
-        totalPoints: 0,
+        totalPoints: countScore(addedProducts, scoreIsCounted),
       }));
 
-    setPoints(lastTransaction);
-    pointsAreCounted && setLastTransactionIsSet(true);
+    setLastTransactionIsSet(true);
   };
 
   const addTransaction = () => {
@@ -260,7 +213,7 @@ const App = () => {
     clientTransactions
   ) => {
     if (clientTransactions.length) {
-      //find last newest record to get it's date
+      //find the newest record to get its date
       let lastDate = new Date(
         clientTransactions.reduce(function (a, b) {
           return a.date > b.date ? a : b;
@@ -301,7 +254,7 @@ const App = () => {
       },
       0);
 
-      setTotalPointsLast3MonthsClientTransactions(result);
+      setTotalScoreLast3MonthsClientTransactions(result);
       setClientLastThreeMonthsTransactions(filteredByClient3MonthsTransactions);
     }
   };
@@ -337,10 +290,15 @@ const App = () => {
 
   return (
     <div>
+      <div className="info">
+        <p>
+          1. To get data from the API, run the command in the terminal:
+          <code>npm run server</code>or<code>yarn server</code>
+        </p>
+      </div>
       <div>
         <h2>Client</h2>
         <label htmlFor="client-select">Choose a Client:</label>
-
         <select name="clients" id="client-select" onChange={handleSelectClient}>
           <option value="">--Please choose a Client--</option>
           {clients.length && !areClientsLoading
@@ -356,9 +314,9 @@ const App = () => {
       <div className="products">
         <h2 className="products__panelTitle">Products</h2>
         {productsAreLoading ? (
-          <NoData message={"Loading products..."} icon={""} />
+          <NoData message={"Loading products..."} />
         ) : !products.length && !productsAreLoading ? (
-          <NoData message={error} icon={""} />
+          <NoData message={error} />
         ) : (
           products.map((product, index) => {
             return (
@@ -380,11 +338,11 @@ const App = () => {
           {!isSelectedClientSet ||
           selectedClient.id === null ||
           selectedClient.id === undefined
-            ? "Unknown Client Order (reset when is confirmed)"
-            : `${selectedClient.name}'s Order (reset when is confirmed)`}
+            ? "Unknown Client Order (reset when order is confirmed)"
+            : `${selectedClient.name}'s Order (reset when order is confirmed)`}
         </h2>
         {!addedProducts.length ? (
-          <NoData message={"There is no added product now"} icon={""} />
+          <NoData message={"There is no added product now"} />
         ) : (
           <div>
             <Order
@@ -426,19 +384,22 @@ const App = () => {
       </div>
 
       <div>
+        <em>Change select input on the top to see other Clients' data</em>
         <h2 className="order__panelTitle">
           {!isSelectedClientSet ||
           selectedClient.id === null ||
           selectedClient.id === undefined
-            ? "Unknown Client Last 3 month Transactions (from last record)"
-            : `${selectedClient.name}'s Last 3 month Transactions (from last record)`}
+            ? "Unknown Client transactions during a three month period (from last record)"
+            : `${selectedClient.name}'s transactions during a three month period (from last record)`}
         </h2>
         {!clientLastThreeMonthsTransactions.length ? (
-          <NoData message="There is no last 3 month transaction for this Client" />
+          <NoData message="There is no transactions during a three month period (from last record) for this Client" />
         ) : (
           <div>
-            <strong>Total Points:</strong>
-            <em>{totalPointsLast3MonthsClientTransactions}</em>
+            <strong>Total score:</strong>
+            <em>{totalScoreLast3MonthsClientTransactions.toFixed(1)}</em>
+            <strong>Average score / month:</strong>
+            <em>{(totalScoreLast3MonthsClientTransactions / 3).toFixed(1)}</em>
             <Transactions transactions={clientLastThreeMonthsTransactions} />
           </div>
         )}
