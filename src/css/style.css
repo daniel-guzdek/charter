@@ -1,0 +1,27 @@
+span,
+strong,
+em {
+  margin-left: 4px;
+  margin-right: 7px;
+}
+
+h2 {
+  color: blue;
+}
+
+.product {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.product__detail {
+  margin: 8px 12px;
+  margin-right: 6px;
+}
+
+.product__price {
+  width: 50px;
+  display: flex;
+  justify-content: flex-end;
+}

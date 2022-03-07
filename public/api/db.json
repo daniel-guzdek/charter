@@ -1,0 +1,59 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Product 1",
+      "price": 100,
+      "currency": "$",
+      "amount": 6,
+      "orderQuantity": 0
+    },
+    {
+      "id": 2,
+      "name": "Product 2",
+      "price": 160,
+      "currency": "$",
+      "amount": 3,
+      "orderQuantity": 0
+    },
+    {
+      "id": 3,
+      "name": "Product 3",
+      "price": 30,
+      "currency": "$",
+      "amount": 10,
+      "orderQuantity": 0
+    },
+    {
+      "id": 4,
+      "name": "Product 4",
+      "price": 70,
+      "currency": "$",
+      "amount": 8,
+      "orderQuantity": 0
+    },
+    {
+      "id": 5,
+      "name": "Product 5",
+      "price": 130,
+      "currency": "$",
+      "amount": 3,
+      "orderQuantity": 0
+    }
+  ],
+  "transactions": [],
+  "clients": [
+    {
+      "id": 1,
+      "name": "Client 1"
+    },
+    {
+      "id": 2,
+      "name": "Client 2"
+    },
+    {
+      "id": 3,
+      "name": "Client 3"
+    }
+  ]
+}
