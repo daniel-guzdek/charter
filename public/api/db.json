@@ -11,15 +11,15 @@
     {
       "id": 2,
       "name": "Product 2",
-      "price": 160,
+      "price": 12.5,
       "currency": "$",
-      "amount": 3,
+      "amount": 15,
       "orderQuantity": 0
     },
     {
       "id": 3,
       "name": "Product 3",
-      "price": 30,
+      "price": 35.99,
       "currency": "$",
       "amount": 10,
       "orderQuantity": 0
@@ -27,9 +27,9 @@
     {
       "id": 4,
       "name": "Product 4",
-      "price": 70,
+      "price": 7.25,
       "currency": "$",
-      "amount": 8,
+      "amount": 18,
       "orderQuantity": 0
     },
     {
