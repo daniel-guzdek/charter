@@ -5,6 +5,14 @@ em {
   margin-right: 7px;
 }
 
+code {
+  margin-left: 4px;
+  margin-right: 4px;
+  padding: 4px 6px;
+  background-color: rgb(230, 230, 230);
+  border-radius: 3px;
+}
+
 h2 {
   color: blue;
 }
