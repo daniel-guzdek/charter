@@ -1,11 +1,16 @@
 # Instalation
 
 clone repository
-install node.js on machine
-npm install -g yarn
-cd charter
-yarn server
-yarn start
+
+install `node.js` on machine
+
+`npm install -g yarn`
+
+`cd charter`
+
+`yarn server`
+
+`yarn start`
 
 ## Available Scripts
 

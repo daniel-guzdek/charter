@@ -22,7 +22,7 @@ const AddedProduct = (props) => {
         <strong className="product__detail">
           {orderQuantity === 0
             ? orderQuantity
-            : orderQuantity * price + currency}
+            : (orderQuantity * price).toFixed(2) + currency}
         </strong>
       </span>
       <button onClick={() => removeAddedProduct(product)}>Remove</button>

@@ -1,5 +1,6 @@
 import React from "react";
 import AddedProduct from "./AddedProduct";
+import AlertInfo from "./AlertInfo";
 
 const Order = (props) => {
   const {
@@ -25,24 +26,39 @@ const Order = (props) => {
   return (
     <div>
       {renderAddedProducts}
-      <button
-        disabled={
-          selectedClient.id === null ||
-          selectedClient.id === undefined ||
-          lastTransactionIsSet
-        }
-        onClick={createLastTransactionObject}
+      <div
+        style={{
+          marginTop: 30,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
-        Done
-      </button>
-      <button disabled={!lastTransactionIsSet} onClick={addTransaction}>
-        Confirm transaction
-      </button>
-      <div style={{ color: "crimson", marginTop: 5, marginBottom: 5 }}>
-        {selectedClient.id === null || selectedClient.id === undefined
-          ? "Select a Client to complete transaction"
-          : null}
+        <button
+          disabled={
+            selectedClient.id === null ||
+            selectedClient.id === undefined ||
+            lastTransactionIsSet
+          }
+          onClick={createLastTransactionObject}
+          style={{ width: 80, height: 50, borderRadius: 4, margin: 5 }}
+        >
+          Done
+        </button>
+        <button
+          disabled={!lastTransactionIsSet}
+          onClick={addTransaction}
+          style={{ width: 120, height: 50, borderRadius: 4, margin: 5 }}
+        >
+          Confirm transaction
+        </button>
       </div>
+      {selectedClient.id === null || selectedClient.id === undefined ? (
+        <AlertInfo
+          message={"Select a Client to complete transaction"}
+          severity={"error"}
+        />
+      ) : null}
     </div>
   );
 };

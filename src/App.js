@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import NoData from "./components/NoData";
 import { countScore } from "./functions/countScore";
 import { getDate } from "./functions/getDate";
-import Product from "./components/Product";
 import Transactions from "./components/Transactions";
 import Order from "./components/Order";
+import CssBaseline from "@mui/material/CssBaseline";
+import Container from "@mui/material/Container";
+import Info from "./components/Info";
+import ClientSelect from "./components/ClientSelect";
+import Products from "./components/Products";
+import AlertInfo from "./components/AlertInfo";
+import Typography from "@mui/material/Typography";
+import { Paper } from "@mui/material";
 import "./css/style.css";
 
-const apiProducts = "http://localhost:5000/products";
+const apiProducts = `http://localhost:5000/products`;
 const apiTransactions = "http://localhost:5000/transactions";
 const apiClients = "http://localhost:5000/clients";
 
@@ -289,122 +295,238 @@ const App = () => {
   }, [selectedClient, clientTransactions]);
 
   return (
-    <div>
-      <div className="info">
-        <p>
-          1. To get data from the API, run the command in the terminal:
-          <code>npm run server</code>or<code>yarn server</code>
-        </p>
-      </div>
-      <div>
-        <h2>Client</h2>
-        <label htmlFor="client-select">Choose a Client:</label>
-        <select name="clients" id="client-select" onChange={handleSelectClient}>
-          <option value="">--Please choose a Client--</option>
-          {clients.length && !areClientsLoading
-            ? clients.map((client) => (
-                <option key={client.id} value={`client_${client.id}`}>
-                  {client.name}
-                </option>
-              ))
-            : null}
-        </select>
-      </div>
-
-      <div className="products">
-        <h2 className="products__panelTitle">Products</h2>
+    <React.Fragment>
+      <CssBaseline />
+      <Container maxWidth="lg" style={{ marginTop: 40, marginBottom: 40 }}>
+        <Info />
+        <ClientSelect
+          handleSelectClient={handleSelectClient}
+          clients={clients}
+          areClientsLoading={areClientsLoading}
+          selectedClient={selectedClient}
+          setSelectedClient={setSelectedClient}
+        />
         {productsAreLoading ? (
-          <NoData message={"Loading products..."} />
+          <AlertInfo message={"Loading products..."} severity={"info"} />
         ) : !products.length && !productsAreLoading ? (
-          <NoData message={error} />
+          <AlertInfo message={error} severity={"error"} />
         ) : (
-          products.map((product, index) => {
-            return (
-              <Product
-                key={product.id}
-                index={index}
-                product={product}
-                increaseQuantity={increaseQuantity}
-                decreaseQuantity={decreaseQuantity}
-                addItem={addItem}
-              />
-            );
-          })
-        )}
-      </div>
-
-      <div className="order">
-        <h2 className="order__panelTitle">
-          {!isSelectedClientSet ||
-          selectedClient.id === null ||
-          selectedClient.id === undefined
-            ? "Unknown Client Order (reset when order is confirmed)"
-            : `${selectedClient.name}'s Order (reset when order is confirmed)`}
-        </h2>
-        {!addedProducts.length ? (
-          <NoData message={"There is no added product now"} />
-        ) : (
-          <div>
-            <Order
-              addedProducts={addedProducts}
-              selectedClient={selectedClient}
-              createLastTransactionObject={createLastTransactionObject}
-              lastTransactionIsSet={lastTransactionIsSet}
-              addTransaction={addTransaction}
-              removeAddedProduct={removeAddedProduct}
+          <Paper style={{ marginTop: 30 }}>
+            <Typography
+              variant="h5"
+              component="h1"
+              style={{ padding: 10, color: "rgb(25, 118, 210)" }}
+            >
+              Products
+            </Typography>
+            <Products
+              products={products}
+              productsAreLoading={productsAreLoading}
+              error={error}
+              increaseQuantity={increaseQuantity}
+              decreaseQuantity={decreaseQuantity}
+              addItem={addItem}
             />
-          </div>
+          </Paper>
         )}
-      </div>
 
-      <div>
-        <h2>All Transactions (All Clients)</h2>
-        {areTransactionsLoading ? (
-          "Loading transactions..."
-        ) : !transactions.length ? (
-          <NoData message="There is no transaction" />
-        ) : (
-          <Transactions transactions={transactions} />
-        )}
-      </div>
-
-      <div>
-        <h2 className="order__panelTitle">
+        <Paper style={{ marginTop: 30, marginBottom: 10 }}>
           {!isSelectedClientSet ||
           selectedClient.id === null ||
-          selectedClient.id === undefined
-            ? "Unknown Client Transactions"
-            : `${selectedClient.name}'s Transactions`}
-        </h2>
-        {!clientTransactions.length ? (
-          <NoData message="There is no transaction for this Client" />
-        ) : (
-          <Transactions transactions={clientTransactions} />
-        )}
-      </div>
+          selectedClient.id === undefined ? (
+            <div>
+              <Typography
+                variant="h5"
+                component="h1"
+                style={{ padding: 10, color: "rgb(25, 118, 210)" }}
+              >
+                Unknown Client Order
+              </Typography>
+              <Typography
+                variant="h8"
+                gutterBottom
+                component="div"
+                style={{
+                  padding: 10,
+                  paddingTop: 0,
+                  color: "rgb(25, 118, 210)",
+                }}
+              >
+                (reset when order is confirmed)
+              </Typography>
+            </div>
+          ) : (
+            <div>
+              <Typography
+                variant="h5"
+                component="h1"
+                style={{ padding: 10, color: "rgb(25, 118, 210)" }}
+              >
+                {" "}
+                {selectedClient.name}'s Order{" "}
+              </Typography>
+              <Typography
+                variant="h8"
+                gutterBottom
+                component="div"
+                style={{
+                  padding: 10,
+                  paddingTop: 0,
+                  color: "rgb(25, 118, 210)",
+                }}
+              >
+                (reset when order is confirmed)
+              </Typography>
+            </div>
+          )}
 
-      <div>
-        <em>Change select input on the top to see other Clients' data</em>
-        <h2 className="order__panelTitle">
-          {!isSelectedClientSet ||
-          selectedClient.id === null ||
-          selectedClient.id === undefined
-            ? "Unknown Client transactions during a three month period (from last record)"
-            : `${selectedClient.name}'s transactions during a three month period (from last record)`}
-        </h2>
-        {!clientLastThreeMonthsTransactions.length ? (
-          <NoData message="There is no transactions during a three month period (from last record) for this Client" />
-        ) : (
+          {!addedProducts.length ? (
+            <AlertInfo
+              message={"There is no added product now"}
+              severity={"info"}
+            />
+          ) : (
+            <div>
+              <Order
+                addedProducts={addedProducts}
+                selectedClient={selectedClient}
+                createLastTransactionObject={createLastTransactionObject}
+                lastTransactionIsSet={lastTransactionIsSet}
+                addTransaction={addTransaction}
+                removeAddedProduct={removeAddedProduct}
+              />
+            </div>
+          )}
+        </Paper>
+
+        <Paper style={{ marginTop: 30, marginBottom: 10 }}>
+          <Typography
+            variant="h5"
+            component="h1"
+            style={{ padding: 10, color: "rgb(25, 118, 210)" }}
+          >
+            All Transactions
+          </Typography>
+          <Typography
+            variant="h8"
+            gutterBottom
+            component="div"
+            style={{ padding: 10, paddingTop: 0, color: "rgb(25, 118, 210)" }}
+          >
+            (All Clients & dates of purchase)
+          </Typography>
+          {areTransactionsLoading ? (
+            "Loading transactions..."
+          ) : !transactions.length ? (
+            <AlertInfo message="No transaction" severity={"info"} />
+          ) : (
+            <div>
+              <Transactions transactions={transactions} />
+            </div>
+          )}
+        </Paper>
+
+        <Paper style={{ marginTop: 30, marginBottom: 10 }}>
+          <Typography
+            variant="h5"
+            component="h1"
+            style={{ padding: 10, color: "rgb(25, 118, 210)" }}
+          >
+            {!isSelectedClientSet ||
+            selectedClient.id === null ||
+            selectedClient.id === undefined
+              ? "Unknown Client Transactions"
+              : `${selectedClient.name}'s Transactions`}
+          </Typography>
+          {!clientTransactions.length ? (
+            <AlertInfo
+              message="There is no transaction for this Client"
+              severity={"info"}
+            />
+          ) : (
+            <Transactions transactions={clientTransactions} />
+          )}
+        </Paper>
+
+        <Paper style={{ marginTop: 30, marginBottom: 10 }}>
+          <AlertInfo
+            message={
+              "Change select input on the top to see other Clients' data"
+            }
+            severity={"warning"}
+          />
           <div>
-            <strong>Total score:</strong>
-            <em>{totalScoreLast3MonthsClientTransactions.toFixed(1)}</em>
-            <strong>Average score / month:</strong>
-            <em>{(totalScoreLast3MonthsClientTransactions / 3).toFixed(1)}</em>
-            <Transactions transactions={clientLastThreeMonthsTransactions} />
+            {!isSelectedClientSet ||
+            selectedClient.id === null ||
+            selectedClient.id === undefined ? (
+              <div>
+                <Typography
+                  variant="h5"
+                  component="h1"
+                  style={{ padding: 10, color: "rgb(25, 118, 210)" }}
+                >
+                  Unknown Client transactions in a 3 month period
+                </Typography>
+                <Typography
+                  variant="h8"
+                  gutterBottom
+                  component="div"
+                  style={{
+                    padding: 10,
+                    paddingTop: 0,
+                    color: "rgb(25, 118, 210)",
+                  }}
+                >
+                  (from last record)
+                </Typography>
+              </div>
+            ) : (
+              <div>
+                <Typography
+                  variant="h5"
+                  component="h1"
+                  style={{ padding: 10, color: "rgb(25, 118, 210)" }}
+                >
+                  {selectedClient.name}'s transactions in a 3 month period
+                </Typography>
+                <Typography
+                  variant="h8"
+                  gutterBottom
+                  component="div"
+                  style={{
+                    padding: 10,
+                    paddingTop: 0,
+                    color: "rgb(25, 118, 210)",
+                  }}
+                >
+                  (from last record)
+                </Typography>
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </div>
+          {!clientLastThreeMonthsTransactions.length ? (
+            <AlertInfo
+              message="There is no transactions during a three month period (from last record) for this Client"
+              severity={"info"}
+            />
+          ) : (
+            <div>
+              <div
+                style={{ marginLeft: 10, paddingTop: 10, paddingBottom: 10 }}
+              >
+                <strong>Total score:</strong>
+                <em>{totalScoreLast3MonthsClientTransactions.toFixed(1)}</em>
+                <strong>Average score / month:</strong>
+                <em>
+                  {(totalScoreLast3MonthsClientTransactions / 3).toFixed(1)}
+                </em>
+              </div>
+              <Transactions transactions={clientLastThreeMonthsTransactions} />
+            </div>
+          )}
+        </Paper>
+      </Container>
+    </React.Fragment>
   );
 };
 

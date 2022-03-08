@@ -3,6 +3,7 @@ strong,
 em {
   margin-left: 4px;
   margin-right: 7px;
+  color: "#504747";
 }
 
 code {
@@ -11,10 +12,6 @@ code {
   padding: 4px 6px;
   background-color: rgb(230, 230, 230);
   border-radius: 3px;
-}
-
-h2 {
-  color: blue;
 }
 
 .product {
@@ -32,4 +29,8 @@ h2 {
   width: 50px;
   display: flex;
   justify-content: flex-end;
+}
+
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.css-1ps6pg7-MuiPaper-root {
+  margin: 0;
 }
